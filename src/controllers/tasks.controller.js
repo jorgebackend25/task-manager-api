@@ -179,3 +179,27 @@ export const taskComplete = async (req, res) => {
     });
   }
 };
+
+export const deleteTasks = async (req, res) => {
+  try {
+    const { id: taskId } = req.params;
+    const { id: userId } = req.user;
+
+    const deletedTask = await deleteTaskByIdAndUser(taskId, userId);
+
+    if (!deletedTask) {
+      return res.status(404).json({
+        message: "tarea no encontrada",
+      });
+    }
+
+    return res.status(200).json({
+      message: "tarea eliminada correctamente",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "error interno",
+    });
+  }
+};
