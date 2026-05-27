@@ -12,7 +12,7 @@ import {
   taskSchema,
   completeTaskSchema,
   taskParamsSchema,
-} from "../Schema/tasks.schema.js";
+} from "../schemas/tasks.schema.js";
 import { validateSchema } from "../middlewares/validate.schema.js";
 import { validateParams } from "../middlewares/validateParams.js";
 const router = Router();

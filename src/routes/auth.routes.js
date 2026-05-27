@@ -6,7 +6,7 @@ import {
   logout,
 } from "../controllers/auth.controller.js";
 import { validateSchema } from "../middlewares/validate.schema.js";
-import { registerSchema, loginSchema } from "../schema/auth.schema.js";
+import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
 import { authRequired } from "../middlewares/validatetoken.js";
 const router = Router();
 
