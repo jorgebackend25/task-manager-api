@@ -81,17 +81,13 @@ export const getTasks = async (req, res) => {
 export const createTasks = async (req, res) => {
   try {
     const { title, description } = req.body;
+    const { id: userId } = req.user;
 
-    const { id } = req.user;
-
-    const tasksSave = await pool.query(
-      "INSERT INTO tasks (title,description,user_id) VALUES ($1,$2,$3) RETURNING *",
-      [title, description, id],
-    );
+    const task = await createTask(title, description, userId);
 
     return res.status(201).json({
       message: "tarea creada correctamente",
-      tasks: tasksSave.rows[0],
+      task,
     });
   } catch (error) {
     console.log(error);
@@ -100,7 +96,6 @@ export const createTasks = async (req, res) => {
     });
   }
 };
-
 export const getTask = async (req, res) => {
   try {
     const { id: taskId } = req.params;
