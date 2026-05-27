@@ -120,25 +120,28 @@ export const getTask = async (req, res) => {
   }
 };
 
-export const deleteTasks = async (req, res) => {
+export const updateTasks = async (req, res) => {
   try {
-    const { id } = req.params;
-
+    const { id: taskId } = req.params;
     const { id: userId } = req.user;
+    const { title, description } = req.body;
 
-    const tasksDelete = await pool.query(
-      "DELETE FROM tasks WHERE id = $1 AND user_id = $2  RETURNING *",
-      [id, userId],
+    const updatedTask = await updateTaskByIdAndUser(
+      taskId,
+      userId,
+      title,
+      description,
     );
 
-    if (tasksDelete.rowCount === 0) {
+    if (!updatedTask) {
       return res.status(404).json({
         message: "tarea no encontrada",
       });
     }
 
     return res.status(200).json({
-      message: "tarea eliminada correctamente",
+      message: "tarea actualizada correctamente",
+      task: updatedTask,
     });
   } catch (error) {
     console.log(error);
@@ -147,44 +150,19 @@ export const deleteTasks = async (req, res) => {
     });
   }
 };
-export const updateTasks = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { id: userId } = req.user;
-    const { title, description } = req.body;
-
-    const tasksUpdate = await pool.query(
-      "UPDATE tasks SET title = $1, description = $2  WHERE id = $3 AND  user_id = $4 RETURNING * ",
-      [title, description, id, userId],
-    );
-
-    if (tasksUpdate.rowCount === 0) {
-      return res.status(404).json({
-        message: "tarea no encontrada",
-      });
-    }
-
-    return res.json(tasksUpdate.rows[0]);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "error interno",
-    });
-  }
-};
-
 export const taskComplete = async (req, res) => {
   try {
-    const { id: idTasks } = req.params;
+    const { id: taskId } = req.params;
     const { id: userId } = req.user;
     const { complete } = req.body;
 
-    const statusTasks = await pool.query(
-      "UPDATE tasks SET complete = $1  WHERE id = $2 AND user_id = $3 RETURNING * ",
-      [complete, idTasks, userId],
+    const updatedTask = await updateTaskCompleteByIdAndUser(
+      taskId,
+      userId,
+      complete,
     );
 
-    if (statusTasks.rows.length === 0) {
+    if (!updatedTask) {
       return res.status(404).json({
         message: "tarea no encontrada",
       });
@@ -192,7 +170,7 @@ export const taskComplete = async (req, res) => {
 
     return res.status(200).json({
       message: "tarea actualizada",
-      updateTask: statusTasks.rows[0],
+      task: updatedTask,
     });
   } catch (error) {
     console.log(error);
